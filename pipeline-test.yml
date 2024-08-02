@@ -1,0 +1,31 @@
+resources:
+  - name: concourse-pipeline-repo
+    type: git
+    source:
+      uri: http link to repo
+      git_config:
+        - name: safe.directory
+          value: /tmp/build/get
+
+jobs:
+  - name: build-react-native-project
+    plan:
+      - get: concourse-pipeline-repo
+        trigger: true
+      - task: install-dependencies
+        config:
+          platform: linux
+          image_resource:
+            type: registry-image
+            source:
+              repository: node
+              tag: "18-alpine3.20"
+          inputs:
+            - name: concourse-pipeline-repo
+          run:
+            path: /bin/sh
+            args:
+              - -exc
+              - |
+                cd concourse-pipeline-repo
+                yarn install
